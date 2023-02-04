@@ -48,6 +48,8 @@ Language behaviors:
 * Use ```max()``` to return null of the row does not exist.
 
 * The window functions: ```row_number()``` gives distinct numbers, ```rank()``` gives non-distinct and non-continuous numbers, ```dense_rank()``` gives distinct and continuous numbers.
+
+
 --------------------------------------------------
 ## String manipulation
 
