@@ -1,0 +1,56 @@
+---
+title: "Tail Recursion"
+date: 2023-02-03
+categories: Data Structure
+---
+
+Each call from the recursion function will initiate its downstream calls, with this call as the "root". The global root is the first call of the function.
+
+``` python
+def f(n):  # root call
+
+    ...
+
+    f(n-1) # recursive call
+
+    ...
+```
+
+In general (case 1 in the fig.), the root call will need the return value of the recursive call to compute. e.g., In backtracking, the searching direction is non-predictable (i.e., in a tree or a graph). Therefore, the root needs to redirect the search based on the return value of its recursive call.
+
+Another example is the divide-and-conquer situation, where the original problem is at the root node of a tree. At each level, the problem is divided into sub-problems. The final result has to be gathered at the root node because each non-root node is only aware of its own sub-problem. 
+
+However, when the search direction is expressable, and the number of branches does not increase at each level, it could likely be a tail recursion.
+
+A recursion is said to be a tail recursion if the rest of the function does not rely on finishing the recursion step, so there is no need to maintain the full calling stack (case 2 in the fig.).
+
+
+
+![image](https://user-images.githubusercontent.com/3526618/216741222-ba97ab6e-64fd-4a98-90b9-ca8fdd56cd63.png)
+
+The "tail recursion" got its name because, to make the compiler think the function does not depend on the return value of the recursive call, the recursive step must be at the tail part of the function body.
+
+
+
+This kind of writing is not a tail recursion:
+
+``` python
+
+def f(n):
+
+    return n + f(n-1)
+```
+
+
+Because it's equivalent to
+
+``` python
+
+def f(n):
+
+    res = f(n-1)
+
+    res += n
+
+    return res
+```
