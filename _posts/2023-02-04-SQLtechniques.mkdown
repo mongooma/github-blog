@@ -1,3 +1,15 @@
+---
+title: "All-in-one MySQL techniques (beginner-intermediate)"
+date: 2023-02-03
+---
+
+Below is the copy of the gist project of my study notes for MySQL. The actual total study time is approximately ~20hrs. This guide is a quick reference of the common syntax, or a more simpler way to understand MySQL for those who are already familiar with other programming languages. 
+
+The most important thing is to realize that, MySQL is basically a language that manipulates tables. The tables are the data structure for MySQL as the lists, tuples and dictionaries for Python. 
+
+
+---
+
 Hackerrank features:
 (Mysql vs Mysql server on hackerrank)
 * ```with``` clause sometimes cause error in mysql environment
