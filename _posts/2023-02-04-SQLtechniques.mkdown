@@ -1,0 +1,376 @@
+---
+title: "All-in-one MySQL techniques (beginner-intermediate)"
+date: 2023-02-03
+categories: Database
+---
+
+Below is the copy of the gist project of my study notes for MySQL. The actual total study time is approximately ~20hrs. This guide is a quick reference of the common syntax, or a more simpler way to understand MySQL for those who are already familiar with other programming languages. 
+
+The most important thing is to realize that, MySQL is basically a language that manipulates tables. The tables are the data structure for MySQL as the lists, tuples and dictionaries for Python. 
+
+
+---
+
+Hackerrank features:
+(Mysql vs Mysql server on hackerrank)
+* ```with``` clause sometimes cause error in mysql environment
+
+* ```--``` comment cannot be written in the same line with the code
+
+* In mysql, each ```select``` sentence is one line in the debugging message. In mysql server, the line number is in accordance with shown in the editor view.
+
+
+
+Language behaviors:
+
+* sql does not differ lower and upper cases;
+
+* The ```()``` are mandatory for sub-conditions (even when only one condition is present!)
+
+* The ```=``` is used in the same way for ```==``` as "is equivalent to" 
+
+* The ```!=``` is used the same way.
+
+* The behavior of ```/``` is ambiguous. To ensure the integer result, use ```ceil(), floor()```
+
+* Use ```is NULL``` and ```is not NULL``` to check null values. ```= null``` will not be right.
+
+* ```sqrt()```, ```power()``` used in the same fashions.
+
+* ```length()``` to get the length (number of bytes) of the string.
+
+* Use ```from table1, table2, ...``` directly for the descarte product.
+
+* Use ```limit n``` to select the first n rows of data. Rank desc on some column first to select the "last" rows. Run ```() union ()``` to select both. ```union``` requires brackets. 
+
+* Use ```count(*)``` to get the number of rows in the table.
+
+* Use ```max()``` to return null of the row does not exist.
+
+* The window functions: ```row_number()``` gives distinct numbers, ```rank()``` gives non-distinct and non-continuous numbers, ```dense_rank()``` gives distinct and continuous numbers.
+--------------------------------------------------
+## String manipulation
+
+To manipulate the string output, write something like:
+
+``` sql
+select concat("Hi, ", COUNT(NAME), ' of ', substr(occupation, 1, 3), 's.') 
+from occupations 
+group by occupation 
+order by COUNT(NAME), occupation;
+```
+
+Notice in the above example, the simple ```concat``` is used to format a string, ```substr(s, pos, num)``` acts as ``string[pos+1:pos+1+num]```` to get part of the string. See here for more ways to manipulate the string output https://learnsql.com/blog/5-functions-manipulating-sql-strings/
+
+
+## Select
+
+The basic select sentence is of structure:
+
+``` sql
+select COLUMN from TABLE where CONDITION 
+```
+
+To intepret the sentence, it's actually of this order
+
+``` sql
+select COLUMN from (TABLE where CONDITION)
+```
+
+The table will be loaded into the scope (all the column names). 
+Therefore the column names are free to refer after select or in the CONTIDION.
+
+To use group by and aggregated functions:
+
+``` sql
+select MAX(COLUMN) from ((TABLE where CONDITION) group by COLUMN) 
+```
+
+Here the ordering is ```table where ...``` to get the slicing by some column value conditioning, and then ```group by ...``` to get the bags/sets of the rows, and finally the aggregation func to perform on the desired column. 
+
+So notice the ```select``` syntax is better interpretated as "get", rather than a active selection as if it's a functional verb that should be run as the first move.
+
+And when using multiple tables, the ```join``` is written like:
+
+``` sql
+select COLUMN from ((TABLE1 left join TABLE2 on TABLE1.column = TABLE2.column) where CONDITION) ...
+```
+
+Since obviously the first step is to get the complete joined table into the scope, then slicing and etc.
+
+
+To order the syntax for the ```select``` sentence it should be:
+
+``` sql
+select MAX(column) as col1, column2 as col2
+from 
+      (((TABLE1
+        left join TABLE2 on TABLE1.COL1 = TABLE2.COL2)
+          where condition)
+            group by column2)   /* could not use the alias */
+order by col2 DESC; /* could use the alias */
+```
+
+So the efficiency priority goes:
+
+1. Join multiple tables
+
+2. Slicing using column c conditioning
+
+3. Bagging the rows by some column a
+
+4. Ordering the rows by some column b (seems to be on the same level with ```select```)
+
+Notice that 1 & 2 will change the content of the table in the scope, and 2 as slicing should go after 1 joining.
+As for 3 and 4, even they might use different columns thus have no sequential dependency, but if first bagging, the next row ordering could have fewer rows to deal with, thus more efficient.
+
+For a more detailed explanation see https://sqlbolt.com/lesson/select_queries_order_of_execution
+
+### select from multiple tables
+
+In this example, https://www.hackerrank.com/challenges/the-company/problem?isFullScreen=false, the problem asks to gather the information from 5 tables under one ```company_code``` id. This should be a typical setting. And one solution from the discussion looks like:
+
+``` sql
+SELECT 
+ MAX(c.company_code), 
+ MAX(c.founder),
+ (SELECT COUNT(DISTINCT lm.lead_manager_code) FROM Lead_Manager lm WHERE c.company_code = lm.company_code),
+ (SELECT COUNT(DISTINCT sm.senior_manager_code) FROM Senior_Manager sm WHERE c.company_code = sm.company_code),
+ (SELECT COUNT(DISTINCT m.manager_code) FROM Manager m WHERE c.company_code = m.company_code),
+ (SELECT COUNT(DISTINCT e.employee_code) FROM Employee e WHERE c.company_code = e.company_code)
+FROM Company c
+GROUP BY c.company_code
+ORDER BY c.company_code ASC
+```
+
+Notice the structure has a use of "implicit join" https://www.geeksforgeeks.org/implicit-join-vs-explicit-join-in-sql/
+which has the structure as
+
+``` sql
+select col1, col2, col3 /* the column names in table 1 and table 2 */
+from table1, table2
+where table1.foreign_key = table2.foreign_key
+```
+And it has combined multiple ```(select)``` into one "meta" select, and each sub-select will generate one column. 
+
+But the implicit join is not encouraged to use nowadays (someone says it will throw out errors regarding null values, and it's hard to write many conditions in ```where``` (?)). The explicit join could be written as 
+
+``` sql
+SELECT C.company_code,
+        C.founder,
+        COUNT(DISTINCT L.lead_manager_code),
+        COUNT(DISTINCT S.senior_manager_code),
+        COUNT(DISTINCT M.manager_code), 
+        COUNT(DISTINCT E.employee_code)
+FROM Company C 
+LEFT JOIN Lead_Manager L on C.company_code = L.company_code
+LEFT JOIN Senior_Manager S on L.lead_manager_code = S.lead_manager_code
+LEFT JOIN Manager M on S.senior_manager_code = M.senior_manager_code
+LEFT JOIN Employee E on M.manager_code = E.manager_code
+GROUP BY C.company_code, C.founder
+ORDER BY C.company_code;
+```
+(Notice the ```on .col1 = .col2``` has to be aligned with the joining order '<-')
+
+The structure of the giant joined table is 
+
+```
+company_code founder | company_code founder lead_manager_code | company_code founder lead_manager_code senior_manager_code | ...
+---------------------------------------------------------------------------------------------------------------------------------
+```
+Notice the columns with the same names have been preserved within the giant table, and they could still be referred by ```table.col```. 
+
+This shows that ```join``` only links (as allowing the data communication between) the tables but has not actively done anything. 
+
+
+
+## Case..when...
+
+To output for different occasions, use ```case {when...then}*n else end``` as:
+
+``` sql
+select N, 
+case
+    when (P is null) then "Root"
+    when (N in (select P from BST)) then "Inner"
+    else "Leaf"
+end
+from BST;
+```
+
+Notice the last case is ```else```, and as all the script language asked for an ```end``` to signature the close of the segment.
+
+In the above example ```order by``` follows the table loading. It should be interpreted as order the rows first, and then do the ```select```. 
+
+### Case...when... pivoting table
+
+The following example is to use ```case...when...``` to pivot a table
+
+``` sql
+with a as (
+select 
+    case when occupation='doctor' then name end as doctor , /* notice the column is singularly generated this way */
+    case when occupation='professor' then name end as professor ,
+    case when occupation='singer' then name end as singer, 
+    case when occupation='actor' then name end as actor, 
+    row_number() over (partition by occupation order by name) as ran 
+from occupations)
+
+select min(doctor), min(professor), min(singer), min(actor) from a group by ran
+
+```
+
+Notice the ```a``` as a temporary table is of the structure as following:
+
+```
+a in the same effect as: (rows in the original order)
+(occupation) doctor_names   ...    actor_names  ran
+---------------------------------------------------
+doctor        name          ...       null     1
+doctor        name          ...       null     2
+actor         null          ...       name     1
+actor         null          ...       name     2
+```
+
+So when the ```case...when``` use a single case to generate one column based on the original column, the unfit row-column entries will yield ```null```.
+
+The pivoting is partly finished at this point. But the row order column here is the key to align the ordering within each partition in the way:
+```
+p1  p2  p3
+-----------
+v11 v21 v31
+v12 v22 v32
+v13 v23 v33
+... ... ...
+```
+The effect is that the null values will be placed at the bottom of the column-rowset.
+
+The short-hand ```pivot``` simplifies the grammar, like this:
+
+``` sql
+select
+[Doctor], [Professor], [Singer], [Actor]
+from (
+    select row_number() over(partition by occupation order by name) 
+    /* agg() over (partition by ... order by ...)*/
+    /* use row_number()/rank()/dense_rank()/ to preserve the original partition data*/
+    /* ntile(n) will give n rows for each partition */
+    as rk, name, occupation
+    from occupations
+) as t1
+pivot ( /* in the same effect as case ...when..., see above*/
+    min(name)  /* applys on individual cell specified by the row number; but has to be an aggregation func; MIN, MAX both works*/
+    for occupation in (Doctor, Professor, Singer, Actor)
+    /* here the for...in () takes "table-value" rather than "string-value", so no "" needed, write the "table-value" as-is here */
+) as t2;
+```
+
+The ```t1``` looks like:
+```
+rk       name              occupation
+---------------------------------------
+1        name              doctor     
+1        name              actor     
+2        name              doctor     
+2        name              actor     
+```
+And then using ```pivot``` and specifying the pivoted columns. The ```min(name)``` will act on the individual rows, rather than the partitioned by occupation row-set, because of the constraint of the column tuple ```(rk, name)```, therefore the aggregation cannot go beyond the level of row.
+
+### More about where
+
+```where``` could be intepreted as slicing, therefore the agg() could be used on the subset. It's a more determinate row selecting. 
+
+When need to have a set of choice within the ```case when... end``` in the condition, do not write the choices in the list ```case when condition then (c1, c2, c3)```, instead expand the subset to ```or```:
+``` sql
+...
+where (col = (case when condition then c1) or (case when condition then c2) or (case when condition then c3))
+...
+```
+**(However there must be a better way to implement this!)**
+
+
+
+
+## Use sub-table/temporary table/table alias
+
+### With and table alias
+
+All "derived" tables should have alias:
+
+```sql 
+(select ...) t
+```
+
+```from () t where condition(t)```, the alias ```t``` is not seen by the ```where``` query.
+
+The temporary alias table could be lifted out to the beginning into the ```with clause```. 
+```sql
+with t as ()
+select * from t
+```
+
+When using multiple ```with```, do this:
+``` sql
+with t1 as (
+),
+t2 as (
+/* could refer to t1 in here */
+)
+select * from t2 where ... /* t1 is visible to the where query while t2 is not*/
+```
+
+To set a variable, place the query before the ```with```:
+```sql
+Set @variable = (); /**/
+with t1 as (
+),
+t2 as (
+)
+select * from t2 where ...;
+```
+Therefore notice the ```with``` is within the select sentence as a clause. 
+
+### info table and reference table 
+
+In this problem https://www.hackerrank.com/challenges/full-score/problem?isFullScreen=true, it has two part of the information: the coder's info, and the challenges' info. The result returns the info of the coders based on their performance on the challenges. This could be interpreted as a "refering" relationship.
+
+In the original submission the classic way is to create join tables. But SQL has a structure called "correlated subquery" which deals exactly this. The structure looks like:
+
+``` sql
+select col 
+from table t1
+where col operator (
+                  select max(col) 
+                  from table t2 
+                  where t1.id = t2.id)
+```
+
+For example, 
+```sql
+SELECT last_name, salary, department_id
+ FROM employees outer
+ WHERE salary >
+                (SELECT AVG(salary)
+                 FROM employees
+                 WHERE department_id =
+                        outer.department_id 
+                 group by department_id);
+```
+Notice the ```group by``` is also on the correlation column to make sure the comparability.
+
+The effect of the above snippet is to compare the employee's salary to the avg. in his department.
+It's similar to comparing the coder's performance to the difficulty of the challenges he solved. (See the different submission for the implementation.)
+
+And also for this problem https://www.hackerrank.com/challenges/harry-potter-and-wands/problem?isFullScreen=true
+
+### the having clause
+
+```having``` could be used to simplfy the procedure of selecting only the part of the sub-bags, e.g. "the item count larger than k". The grammar is like
+
+```sql
+
+select count(*)
+from table
+group by item
+having count(*) > k
+```
