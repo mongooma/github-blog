@@ -1,7 +1,4 @@
 ---
-title: Elapsed
+title: Welcome to my blog
 ---
-
-This is the start.
-
 
