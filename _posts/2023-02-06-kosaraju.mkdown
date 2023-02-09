@@ -1,11 +1,11 @@
 ---
 title: Illustration of Kosaraju's strongly connected components algorithm
 date: 2023.2.6
-categories: algorithms
+categories: Algorithms
 ---
 
 Kosaraju's algorithm uses the DFS stack to determine the topological sorting of the strongly connected components of a directed graph. 
-Complexity: $$O(|V|+|E|)$$ (Two DFS; Creating components as hashmaps and doing lookups take $$O(V)$$)
+Complexity: $$O(|V|+|E|)$$ (Two DFS; Creating components as hashmaps and doing lookups take $$O(|V|)$$)
 
 Since we are looking at components as nodes in the topological sorting, we focus on the DFS visiting/leaving time regarding a whole component. The visiting time $$t^{visit}$$ for a component is the time when the first node in the component get visited, similarly the leaving time $$t^{leave}$$ is for the last component node popped out of the DFS stack.
 

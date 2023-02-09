@@ -1,7 +1,7 @@
 ---
 title: "Tail Recursion"
 date: 2023-02-03
-categories: "Data Structure"
+categories: [Data Structure]
 ---
 
 Each call from the recursion function will initiate its downstream calls, with this call as the "root". The global root is the first call of the function.

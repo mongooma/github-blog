@@ -1,9 +1,13 @@
 theme: minima
-# remote_theme: poole/hyde@v2.1.0
-# pages-themes/leap-day@v0.2.0
+# remote_theme: pages-themes/leap-day@v0.2.0
 # plugins:
 # - jekyll-remote-theme # add this line to the plugins list if you already have one
 
 title: Elapsed
 author: Mon
 description: Mostly frameworks.
+url: https://mongooma.github.io/github-blog/
+
+minima:
+  skin: solarized
+

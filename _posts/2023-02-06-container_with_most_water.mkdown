@@ -1,14 +1,13 @@
 ---
 title: Proof of Leetcode 11 "Container with most water"
 date: 2023.2.6
-categories: algorithms
+categories: Algorithms
 ---
 
 The solution to Leetcode ["Container with most water"](https://leetcode.com/problems/container-with-most-water/) is a classic two-pointer/greedy algorithm. 
 It sets up the two pointers at the left-most and right-most bar. Then, at each time, it moves the pointer previously pointing to the lower bar to the middle; during the process, records the results of reaching a higher bar, and finally stops and update the pointer position at a bar higher than the one pointed by the other pointer. It stops when ```left+1 == right```.
 
-![process_blog drawing_container with most water](https://user-images.githubusercontent.com/3526618/217097090-632308a6-db33-4b60-a4d0-5dc7199c736a.png)
-
+![process_blog drawing_container with most water (1)](https://user-images.githubusercontent.com/3526618/217102335-310fdff5-863c-4335-b26c-e28ce571a37f.png)
 
 As with most of the greedy algorithms, the correctness of solution is nontrivial. So here is a simple proof by analysis to show the logic of this design.
 
@@ -20,7 +19,7 @@ Let's mark the bars with different type:
 
 Here we consider one round of **"first move right against left, and then move left against right"**:
 
-![blog_drawing_container with most water](https://user-images.githubusercontent.com/3526618/217097397-ebc7e973-16b9-4954-a26a-e6cb11c795c8.png)
+![blog_drawing_container with most water (2)](https://user-images.githubusercontent.com/3526618/217102372-2e1cba81-c631-4005-94a3-3490fa7c7935.png)
 
 Denote the container configurations as ```(x, y)```, and for convenience use ```<``` to indicate a larger container of the right side. 
 
@@ -28,7 +27,8 @@ During this round, we have recorded all the containers of configurations ```(b1,
 
 So we need to prove if the non-recorded configurations will have a larger container than the recorded ones. Now we prove this for the different cases:
 
-![nonrecorded_blog_drawing_container with most water (1)](https://user-images.githubusercontent.com/3526618/217097922-0e289d66-fd7a-47fd-af91-f42bfa9cbf4a.png)
+![nonrecorded_blog_drawing_container with most water (4)](https://user-images.githubusercontent.com/3526618/217102447-9f5bbd17-866d-44df-90c5-57c1e17238fa.png)
+
 
 So the conclusion is that, for those non-recorded cases, we can always find one recorded case to upper-bound it. So chaining the rounds we will make sure the algorithm has the optimal solution in its search.
 
