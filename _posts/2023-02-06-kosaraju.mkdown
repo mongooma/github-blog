@@ -1,7 +1,7 @@
 ---
 title: Illustration of Kosaraju's strongly connected components algorithm
 date: 2023.2.6
-categories: algorithms
+categories: Algorithms
 ---
 
 Kosaraju's algorithm uses the DFS stack to determine the topological sorting of the strongly connected components of a directed graph. 
