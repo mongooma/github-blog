@@ -1,0 +1,7 @@
+---
+title: Geometric Sequence Sum
+date: 2023.2.9
+categories: [Maths]
+---
+
+![geometric sequence ](https://user-images.githubusercontent.com/3526618/217971225-75b05b96-438c-4fae-a64a-40a88df8fbde.png)
