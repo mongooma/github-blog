@@ -1,3 +1,9 @@
+---
+title: "Writing Tree traversal for Backtracking"
+date: 2023-02-15
+categories: [Algorithms]
+---
+
 ## Backtracking as an orderly enumeration for combinational problems with constraints
 
 Backtracking searches all the possible solutions in the solution space in a systematic(orderly) way. It could provide an orderly enumation for a general combination problem with constraint in the format:
