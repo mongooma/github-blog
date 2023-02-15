@@ -11,8 +11,8 @@ Backtracking searches all the possible solutions in the solution space in a syst
 ```
 From a set S, choose a combination C from S.
 
-Let this combination C satisfying g(C);
-AND
+Let this combination C satisfys g(C);
+OR
 Let this combination C satisfying g(C) achieves the best/max/min condition for a target function F(C).
 ```
 
@@ -64,30 +64,30 @@ The "object-oriented" way describes better the structure of the "root-tree/sub-t
 ![Tree Traversal and backtracking_aggregation](https://user-images.githubusercontent.com/3526618/219152509-9dc4a19f-6141-4633-9174-019561d69f4b.png)
 
 
-By writing ```f(n)``` specifically for the the tree rooted on node ```n```, it simutaneously implicates an important feature of ```f(n)```:
+By writing ```f(n, ...)``` specifically for the the tree rooted on node ```n```, it simutaneously implicates an important feature of ```f(n, ...)```:
 
-* ```f(n)``` does not know anything about the subtrees besides that their root nodes are on the other end of the edges.
+* ```f(n, ...)``` does not know anything about the subtrees besides that their root nodes are on the other end of the edges.
 
 That is:
 
-* ```f(n)``` does not access the properties of the subtree root nodes ```nbr```.
+* ```f(n, ...)``` does not access the properties of the subtree root nodes ```nbr```.
 
 
-## General Writing Style of ```f(n)```
+## General Writing Style of f(n, ...)
 
 By incorporating the above rule, it follows the general writing style for ```f(n)```:
 
 ```
 def f(n, state, params):
-  if n is None:
-    return 
+  if not continue_search(n): # no more branches from this node: node is None, some capacity limit is reached, state meets the termination, etc
+    return ...
 
   res = []
   for nbr in n.neighbours:
     if nbr is valid:
       new_state <- state_change(nbr, state) #state change based on choice of nbr
       new_params <- param_change(params) #usually state unaware, e.g. level based
-      res <- f(nbr, new_state)
+      res <- f(nbr, new_state, params)
 
   return aggregate(res)
 
@@ -97,27 +97,55 @@ The ```aggregation()``` above is a general way to get the solution for
 this node ```n``` from the subtrees. But sometimes if we only 
 need to get one valid solution ("any") instead of returning all applicable,
 we could add the early break/return whenever we find a successful 
-```f(nbr)```.
+```f(nbr, ...)```.
 
 ```
-def f(n):
+def f(n, ...):
   ...
   for nbr in n.neighbours:
     if nbr is valid:
       ...
-      if f(nbr):
+      if f(nbr, ...):
         return True
 
   return False
 
 ```
 
-To remind ourselves at all time the locality of ```f(n)```, we could name it 
+To remind ourselves at all time the locality of ```f(n, ...)```, we could name it 
 by the target function, like "found", "matched", "valid", or the return type "max length", 
 "min cost", etc.
 
+## The end condition for f(n, ...)
+
+For different problems it might require different writing styles for the end condition section in ```f(n, ...)```.
+
+For the [word matching problem](https://leetcode.com/problems/word-search/), the end condition is:
+
+```
+def match(n, matched_word, remain_to_match, ...)
+  if len(remain_to_match) == 0:
+    return matched_word
+```
+
+For the [N-queen problem](https://leetcode.com/problems/n-queens/), the end condition is:
+
+```
+def valid(pos, current_placements, ...):
+  if len(current_placements) == N:
+    return True
+```
+
+For a [binary tree max-depth problem](https://leetcode.com/problems/maximum-depth-of-binary-tree/), the end condition is:
+
+```
+def maxDepth(root):
+  if root is None:
+    return 0
+```
+
 **Note for binary tree:**
 
-* The end condition for ```f(n)``` when searching a binary tree is "when ```n``` is ```None```", but NOT "when ```n``` is a leaf node." *
+* The end condition for ```f(n)``` when searching a binary tree is "when ```n``` is ```None```", but NOT "when ```n``` is a leaf node."
 
 
