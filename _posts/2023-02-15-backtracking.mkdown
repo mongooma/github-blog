@@ -4,7 +4,7 @@ date: 2023-02-15
 categories: [Algorithms]
 ---
 
-## Backtracking as an orderly enumeration for combinational problems with constraints
+## Backtracking as orderly enumeration
 
 Backtracking searches all the possible solutions in the solution space in a systematic(orderly) way. It could provide an orderly enumation for a general combination problem with constraint in the format:
 
@@ -28,7 +28,7 @@ Choosing c1 = s_1 -> Choosing c2 from S - {c_1} -> Choosing c3 from S - {c_1, c_
 This is useful when $$S$$ is rather implicitly given, like in the subset-sum problems (e.g. Knapsack). But sometimes the $$S$$ is not given explicitly while the backtracking structure is more explicitly given already:
 * Board games (e.g. crossword, N-queen problem), where the nodes are the board positions, the edges are transitions from a cell to its adjacent cells.
 * Multi-player Step games (e.g. Decision-making min-max), where the nodes are the game states, and the edges are the choices/strategies taken by the player at the source node.
-* Sequential-conditional select (e.g. Resource allocation problems (e.g. [PE151](https://projecteuler.net/problem=151))): where the nodes are the current state of the resources, and the edges are the decisions to make at this step.
+* Sequential-conditional select (e.g. Resource allocation problems (e.g. [PE151](https://projecteuler.net/problem=151))): where the nodes are the current states of the resources, and the edges are the decisions to make at this step.
 
 
 ## The DFS traversal structure of the backtracking
@@ -43,28 +43,28 @@ So even though backtracking is a searching method considering the entire search 
 
 ## Temporally Independent DFS search paths 
 
-Suppose we have already been given a tree of nodes and edges representing this problem. Backtracking on trees are usually done by using depth-first-search as a subroutine. 
+Suppose we have already been given a tree of nodes and edges representing a problem. Backtracking is usually done by using depth-first-search as a subroutine. 
 
-From a node ```n```, each search branch is a path down from this node. The search branches are temporally independent -- if not done parallelly. So sometimes it is convenient to utilize this temporal locality feature to assign temporal values to the visited edges and nodes. For example, in a cross-word game, it requires that a word is composed of non-overlapping cells in the board.
+From a node ```n```, each search branch is a path down from this node. The search branches are temporally independent -- if not done in parallel. So sometimes it is convenient to utilize this temporal locality feature to assign temporary values to the visited edges and nodes. For example, in the cross-word game, it requires that a word is composed of non-overlapping cells in the board.
 
 ![Tree Traversal and backtracking_temporalIndependent (1)](https://user-images.githubusercontent.com/3526618/219152451-34f8d8db-92cc-4099-a396-e0ad16adc7c6.png)
 
-## Object/Procedure-oriented ways to rename the DFS search
+## Object/Procedure-oriented DFS 
 
 The search starting from the node ```n``` is done by calling ```f(n)```. It's often confusing as to what this function is actually doing. Basically, there are two ways to phrase it:
 
-* The "object-oriented" way: We continue the search from ```n``` down the different branches, and return if a search is success from ```n```.
+* The "object-oriented" way: We continue the search from ```n``` down the different branches, and return whether any search is success from ```n```.
 
 * The "precedure-oriented" way: We walk from ```n``` and explore all the paths from this ```n``` with possible early stops.
 
 The "object-oriented" way describes better the structure of the "root-tree/sub-trees and aggregation" search, which leads to --
 
-### Important Locality feature of ```f(n)```
+### Important Locality feature of DFS f(n)
 
 ![Tree Traversal and backtracking_aggregation](https://user-images.githubusercontent.com/3526618/219152509-9dc4a19f-6141-4633-9174-019561d69f4b.png)
 
 
-By writing ```f(n)``` specifically for the the tree rooted on node ```n```, it simutaneously implicated an important feature of ```f(n)```:
+By writing ```f(n)``` specifically for the the tree rooted on node ```n```, it simutaneously implicates an important feature of ```f(n)```:
 
 * ```f(n)``` does not know anything about the subtrees besides that their root nodes are on the other end of the edges.
 
@@ -78,17 +78,43 @@ That is:
 By incorporating the above rule, it follows the general writing style for ```f(n)```:
 
 ```
-def f(n):
-  if n is end:
-    return
+def f(n, state, params):
+  if n is None:
+    return 
 
   res = []
   for nbr in n.neighbours:
-    res <- f(nbr)
+    if nbr is valid:
+      new_state <- state_change(nbr, state) #state change based on choice of nbr
+      new_params <- param_change(params) #usually state unaware, e.g. level based
+      res <- f(nbr, new_state)
 
   return aggregate(res)
 
 ```
+
+The ```aggregation()``` above is a general way to get the solution for 
+this node ```n``` from the subtrees. But sometimes if we only 
+need to get one valid solution ("any") instead of returning all applicable,
+we could add the early break/return whenever we find a successful 
+```f(nbr)```.
+
+```
+def f(n):
+  ...
+  for nbr in n.neighbours:
+    if nbr is valid:
+      ...
+      if f(nbr):
+        return True
+
+  return False
+
+```
+
+To remind ourselves at all time the locality of ```f(n)```, we could name it 
+by the target function, like "found", "matched", "valid", or the return type "max length", 
+"min cost", etc.
 
 **Note for binary tree:**
 
