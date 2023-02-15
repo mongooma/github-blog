@@ -1,0 +1,91 @@
+## Backtracking as an orderly enumeration for combinational problems with constraints
+
+Backtracking searches all the possible solutions in the solution space in a systematic(orderly) way. It could provide an orderly enumation for a general combination problem with constraint in the format:
+
+```
+From a set S, choose a combination C from S.
+
+Let this combination C satisfying g(C);
+AND
+Let this combination C satisfying g(C) achieves the best/max/min condition for a target function F(C).
+```
+
+To make the enumeration orderly, we could first construct the full solution space from the orderly selection:
+
+```
+Let S = {s1, s2, s3, ..., s_N}
+
+Compose a combination C from:
+
+Choosing c1 = s_1 -> Choosing c2 from S - {c_1} -> Choosing c3 from S - {c_1, c_2} -> ...
+```
+This is useful when $$S$$ is rather implicitly given, like in the subset-sum problems (e.g. Knapsack). But sometimes the $$S$$ is not given explicitly while the backtracking structure is more explicitly given already:
+* Board games (e.g. crossword, N-queen problem), where the nodes are the board positions, the edges are transitions from a cell to its adjacent cells.
+* Multi-player Step games (e.g. Decision-making min-max), where the nodes are the game states, and the edges are the choices/strategies taken by the player at the source node.
+* Sequential-conditional select (e.g. Resource allocation problems (e.g. [PE151](https://projecteuler.net/problem=151))): where the nodes are the current state of the resources, and the edges are the decisions to make at this step.
+
+
+## The DFS traversal structure of the backtracking
+
+A backtracking structure is a path traversal in a tree/graph, where the nodes are the elements in the $$S$$. 
+Every candidate solution is a full path. 
+For a graph representation, the fewer edges in the graph the less complexity in the traversal towards the final solution. 
+  The extreme trim-down of a graph is a tree, where the leaf nodes signify all the full paths from the root, and each should be considered and checked. 
+
+So even though backtracking is a searching method considering the entire search space, it would be more efficient than brute-force/full enumeration, because we could prune the subtree of a node when we have decided no more exploration is necessary from a sub-solution.
+
+
+## Temporally Independent DFS search paths 
+
+Suppose we have already been given a tree of nodes and edges representing this problem. Backtracking on trees are usually done by using depth-first-search as a subroutine. 
+
+From a node ```n```, each search branch is a path down from this node. The search branches are temporally independent -- if not done parallelly. So sometimes it is convenient to utilize this temporal locality feature to assign temporal values to the visited edges and nodes. For example, in a cross-word game, it requires that a word is composed of non-overlapping cells in the board.
+
+![Tree Traversal and backtracking_temporalIndependent (1)](https://user-images.githubusercontent.com/3526618/219152451-34f8d8db-92cc-4099-a396-e0ad16adc7c6.png)
+
+## Object/Procedure-oriented ways to rename the DFS search
+
+The search starting from the node ```n``` is done by calling ```f(n)```. It's often confusing as to what this function is actually doing. Basically, there are two ways to phrase it:
+
+* The "object-oriented" way: We continue the search from ```n``` down the different branches, and return if a search is success from ```n```.
+
+* The "precedure-oriented" way: We walk from ```n``` and explore all the paths from this ```n``` with possible early stops.
+
+The "object-oriented" way describes better the structure of the "root-tree/sub-trees and aggregation" search, which leads to --
+
+### Important Locality feature of ```f(n)```
+
+![Tree Traversal and backtracking_aggregation](https://user-images.githubusercontent.com/3526618/219152509-9dc4a19f-6141-4633-9174-019561d69f4b.png)
+
+
+By writing ```f(n)``` specifically for the the tree rooted on node ```n```, it simutaneously implicated an important feature of ```f(n)```:
+
+* ```f(n)``` does not know anything about the subtrees besides that their root nodes are on the other end of the edges.
+
+That is:
+
+* ```f(n)``` does not access the properties of the subtree root nodes ```nbr```.
+
+
+## General Writing Style of ```f(n)```
+
+By incorporating the above rule, it follows the general writing style for ```f(n)```:
+
+```
+def f(n):
+  if n is end:
+    return
+
+  res = []
+  for nbr in n.neighbours:
+    res <- f(nbr)
+
+  return aggregate(res)
+
+```
+
+**Note for binary tree:**
+
+* The end condition for ```f(n)``` when searching a binary tree is "when ```n``` is ```None```", but NOT "when ```n``` is a leaf node." *
+
+
