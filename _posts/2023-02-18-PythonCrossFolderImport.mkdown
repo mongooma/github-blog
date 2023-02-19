@@ -98,7 +98,7 @@ a package for this project, you simply creates the package for ```tools/``` (and
 It might throw error in some occassions if you also want to use them as packages. See [this](https://stackoverflow.com/a/48804718)). And ```import NewProject``` will not have any effect anywhere.**
 
 It would help if you first realized that the packaging means integrating it into your Python environment. 
-As a 3rd party package, you should avoid any name clash with the built-in/installed packages, and also be aware of any name clashes with your own in the future.
+You should avoid any name clash with the built-in/installed packages, and also be aware of any name clashes with your own in the future.
 
 ### Resolve name clash: Name the package by project
 
