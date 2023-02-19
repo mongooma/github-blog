@@ -1,0 +1,176 @@
+---
+title: "Python: Cross-folder import"
+date: 2023-02-18
+categories: [Project Management]
+---
+
+Suppose you have a simple project which has the following folder structure:
+
+```
+NewProject/
+    tools/
+      core.py
+    
+    workflows/
+      preprocessing
+      cleaning.py
+      
+    analysis/
+      plots.py
+      stats.py
+      
+      algorithms/
+        algos.py
+      
+    demo/
+      experiment.py
+   
+    
+  tests/
+    test1.py
+    test2.py
+  
+  main_script.py
+   
+```
+
+The ```main_script.py``` contains simple usage cases/test cases. 
+The ```workflows/*/*``` has all the actual procedures.
+The ```tests``` has tests designed for different parts of this project.
+
+They might all need to import from ```tools/core.py```. 
+And for the scripts placed in ```analysis/```, they need to also import from ```analysis/algorithms/algos.py```.
+For ```algorithms/algos.py```, it needs to import from ```tools/core.py```.
+
+In order to let those cross-folder imports all work successfully, the "easiest" way is to create a package from this project. 
+Creating a package will resolve any path-finding issue there is.
+
+
+## A wrong way to use "python setup.py develop"
+
+Place a ```setup.py``` under the root:
+
+```
+Project_root/
+  setup.py
+```
+
+The minimal ```setup.py``` for this purpose is simply
+
+``` python
+from setuptools import setup
+
+setup(
+  name="some_project",
+)
+```
+Even the ```name``` field is not necessary either. Python will automatically name it ```UNKNOWN``` if it's missing.
+
+And then place an empty ```__init__.py``` under ```tools/``` and ```algorithms/```.
+
+Now build the package: from the Python environment, run ```python setup.py develop``` for development mode.
+
+After running ```python setup.py develop```, the project folder containing ```__init__.py``` will be recognized as packages. 
+That means they will be recognizable everywhere in your python environment. So you could write in ```test1.py```:
+
+```
+import tools
+from tools import core
+from core import ...
+...
+```
+
+
+## Forget above: Better follow some conventions
+
+The above shows how to resolve cross-folder import for any arbitrary folder structures. It's simple and carefree, but it's not the best practice.
+
+### Name clash issue
+
+In the above process, you have created some packages that are only meaningful for the current project. 
+You will forget about all these when you move on from this project and create another one of a similar purpose, 
+which also contains ```tools/``` and ```algorithms/```. You create the package for that project again **(It's worth mentioning now: You are not creating
+a package for this project, you simply creates the packages for ```tools/``` and ```algorithms/```. So ```import NewProject``` will not have any effect anywhere.)**
+
+It would help if you first realized that the packaging means integrating it into your Python environment. 
+As a 3rd party package, you should avoid any name clash with the built-in/installed packages, and also be aware of any name clashes with your own in the future.
+
+### Resolve name clash: Name the package by project
+
+The standard way to organize the package is to wrap it in a parent folder:
+
+```
+NewProject/  # good convention to use the same name as the package name
+  bin/  # the scripts as the entry points
+  
+  NewProject/ # this is the package for this project.
+    ...
+  
+```
+The running ```python setup.py develop``` will create the package named ```NewProject```. All the other sub-folders under ```NewProject``` could only be accessed from calling ```NewProject```.
+
+For a reference to real-world packages, check out [Numpy](https://github.com/numpy/numpy).
+
+### Separate package (re-usable) and calling scripts
+
+Before creating the package, the above project could be re-organized as 
+
+```
+NewProject
+
+  - NewProject  # the package content
+    __init__.py
+    - tools
+      __init__.py
+      core.py
+
+    - algorithms
+      __init__.py
+      algos.py
+
+  - workflows
+    - preprocessing
+      cleaning.py
+      
+    - analysis
+      plots.py
+      stats.py
+      
+    - demo
+      experiment.py
+   
+  - tests
+    test1.py
+    test2.py
+  
+  main_script.py
+  
+  #
+  setup.py
+
+```
+And now you want to write the ```setup.py``` as 
+
+```python 
+
+from setuptools import setup
+
+setup(
+   name='NewProject',
+   packages=["NewProject"],
+)
+```
+
+Then from within ```NewProject/NewProject```, the ```algorithms/*``` could import from ```tools/*``` as 
+
+```
+from NewProject import tools
+```
+or
+
+```
+from NewProject.tools.core import ...
+```
+
+or other ways indicated by the [doc](https://docs.python.org/3/tutorial/modules.html#packages).
+
