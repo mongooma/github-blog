@@ -9,26 +9,26 @@ Suppose you have a simple project which has the following folder structure:
 ```
 NewProject/
     tools/
-      core.py
+        core.py
     
     workflows/
-      preprocessing
-      cleaning.py
+        preprocessing/
+            cleaning.py
       
-    analysis/
-      plots.py
-      stats.py
+        analysis/
+            plots.py
+            stats.py
       
-      algorithms/
-        algos.py
+        algorithms/
+            algos.py
       
-    demo/
-      experiment.py
+        demo/
+            experiment.py
    
     
-  tests/
-    test1.py
-    test2.py
+    tests/
+        test1.py
+        test2.py
   
   main_script.py
    
@@ -116,37 +116,37 @@ For a reference to real-world packages, check out [Numpy](https://github.com/num
 Before creating the package, the above project could be re-organized as 
 
 ```
-NewProject
+NewProject/
 
-  - NewProject  # the package content
-    __init__.py
-    - tools
-      __init__.py
-      core.py
+    NewProject/  # the package content
+        __init__.py
+        tools/
+            __init__.py
+            core.py
 
-    - algorithms
-      __init__.py
-      algos.py
+        algorithms/
+            __init__.py
+            algos.py
 
-  - workflows
-    - preprocessing
-      cleaning.py
+    workflows/
+        preprocessing/
+            cleaning.py
       
-    - analysis
-      plots.py
-      stats.py
+        analysis/
+            plots.py
+            stats.py
       
-    - demo
-      experiment.py
+        demo/
+            experiment.py
    
-  - tests
-    test1.py
-    test2.py
+    tests/
+        test1.py
+        test2.py
   
-  main_script.py
+    main_script.py
   
-  #
-  setup.py
+    #
+    setup.py
 
 ```
 And now you want to write the ```setup.py``` as 
