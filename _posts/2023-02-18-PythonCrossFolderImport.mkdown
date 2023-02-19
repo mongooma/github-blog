@@ -19,8 +19,8 @@ NewProject/
             plots.py
             stats.py
       
-        algorithms/
-            algos.py
+            algorithms/
+                algos.py
       
         demo/
             experiment.py
