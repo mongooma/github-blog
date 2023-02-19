@@ -1,0 +1,104 @@
+---
+title: "Python: Cross-folder import"
+date: 2023-02-18
+categories: [Project Management]
+---
+
+Suppose you have a simple project which has the following folder structure:
+
+```
+NewProject
+  - tools
+    core.py
+    
+  - workflows
+    - preprocessing
+      cleaning.py
+      
+    - analysis
+      plots.py
+      stats.py
+      
+      - algorithms
+        algos.py
+      
+    - demo
+      experiment.py
+   
+    
+  - tests
+    test1.py
+    test2.py
+  
+  main_script.py
+   
+```
+
+The ```main_script.py``` contains the simple usage cases/test cases. 
+The ```workflows/*/*``` has all the actual procedures.
+The ```tests``` has the tests designed for different parts of this project.
+
+They might all need to import from ```tools/core.py```. 
+And for the scripts placed in ```analysis/```, they need to also import from ```analysis/algorithms/algos.py```.
+For ```algorithms/algos.py```, it needs to import from ```tools/core.py```.
+
+In order to let those cross-folder imports all work successfully, the "easiest" way is to create a package from this project. 
+Creating a package will resolve any path finding issue there is.
+
+
+## python setup.py develop
+
+Place a ```setup.py``` under the root:
+
+```
+Project_root
+  setup.py
+```
+
+The minimal ```setup.py``` for this purpose is simply
+
+```
+from setuptools import setup
+
+setup(
+  name="some_project",
+)
+```
+Even the ```name``` field is not necessary either. Python will automatically name it ```UNKNOWN``` if it's missing.
+
+And then place an empty ```__init__.py``` under ```tools/``` and ```algorithms/```.
+
+Now build the package: from the Python environment, run ```python setup.py develop``` for development mode.
+
+After running ```python setup.py develop```, the project folder the folders containing ```__init__.py``` will be recognized as packages. 
+That means, they will be recognizable everywhere from your python environment. So you could write in ```test1.py```:
+
+```
+import tools
+from tools import core
+from core import ...
+...
+```
+
+
+## Forget all above, and follow some conventions
+
+The above shows how to resolve cross-folder import for any arbitrary folder structures. It's simple and carefree, but it's not the best practice.
+
+The biggest issue is that you want to integrate this developing project into your stable global running environment -- simply to make your cross-folder
+import easier. 
+
+In this process, you have created some packages that's only meaningful for the current project. 
+You will forget about all these when you move on from this project and create another one of a similar purpose, 
+which also contains ```tools/``` and ```algorithms/```. You create the package for that project again (It's worth mentioning now: You are not creating
+a package for this project, you simply creates the packages for ```tools/``` and ```algorithms/```. So ```import NewProject``` will not have any effect anywhere.)
+
+You should first realize that the packaging means to integrate it into your Python environment. 
+As a 3rd party package, you may want to avoid any name clash with the built-in/installed packages, and also be aware of any name clashes with your own in the future.
+
+
+
+
+
+
+
