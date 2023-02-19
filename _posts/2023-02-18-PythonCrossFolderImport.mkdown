@@ -4,6 +4,8 @@ date: 2023-02-18
 categories: [Project Management]
 ---
 
+**(For Python 3.7)**
+
 Suppose you have a simple project which has the following folder structure:
 
 ```
@@ -42,11 +44,10 @@ They might all need to import from ```tools/core.py```.
 And for the scripts placed in ```analysis/```, they need to also import from ```analysis/algorithms/algos.py```.
 For ```algorithms/algos.py```, it needs to import from ```tools/core.py```.
 
-In order to let those cross-folder imports all work successfully, the "easiest" way is to create a package from this project. 
-Creating a package will resolve any path-finding issue there is.
+In order to let those cross-folder imports all work successfully, the "easiest" way is to create a package from this project. By creating a package, you could directly use the package root for referencing its modules.
 
 
-## A wrong way to use "python setup.py develop"
+## A wrong way to create the project package
 
 Place a ```setup.py``` under the root:
 
@@ -66,12 +67,13 @@ setup(
 ```
 Even the ```name``` field is not necessary either. Python will automatically name it ```UNKNOWN``` if it's missing.
 
-And then place an empty ```__init__.py``` under ```tools/``` and ```algorithms/```.
+And then place an empty ```__init__.py``` under ```tools/``` and ```algorithms/```. (In Python 3.7 it is still suggested to do this  even though it is not necessary for now.)
 
 Now build the package: from the Python environment, run ```python setup.py develop``` for development mode.
 
-After running ```python setup.py develop```, the project folder containing ```__init__.py``` will be recognized as packages. 
-That means they will be recognizable everywhere in your python environment. So you could write in ```test1.py```:
+After running ```python setup.py develop```, the project folder containing ```__init__.py``` will be recognized as packages. And for Python 3.7, all the first-level subfolders are also visible everywhere in your python environment. 
+
+So you could write in ```test1.py```:
 
 ```
 import tools
@@ -89,8 +91,11 @@ The above shows how to resolve cross-folder import for any arbitrary folder stru
 
 In the above process, you have created some packages that are only meaningful for the current project. 
 You will forget about all these when you move on from this project and create another one of a similar purpose, 
-which also contains ```tools/``` and ```algorithms/```. You create the package for that project again **(It's worth mentioning now: You are not creating
-a package for this project, you simply creates the packages for ```tools/``` and ```algorithms/```. So ```import NewProject``` will not have any effect anywhere.)**
+which also contains ```tools/```. You create the package for that project again and it will mess up your previous imports. 
+
+**It's worth mentioning now: You are not creating
+a package for this project, you simply creates the package for ```tools/``` (and other first-level sub-folders namespaced-ly. 
+It might throw error in some occassions if you also want to use them as packages. See [this](https://stackoverflow.com/a/48804718)). And ```import NewProject``` will not have any effect anywhere.**
 
 It would help if you first realized that the packaging means integrating it into your Python environment. 
 As a 3rd party package, you should avoid any name clash with the built-in/installed packages, and also be aware of any name clashes with your own in the future.
