@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "Writing Tree traversal for Backtracking"
 date: 2023-02-15
 categories: [Algorithms]

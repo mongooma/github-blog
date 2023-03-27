@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Geometric Sequence Sum
 date: 2023.2.9
 categories: [Maths]

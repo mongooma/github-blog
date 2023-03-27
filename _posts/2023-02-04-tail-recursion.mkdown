@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "Tail Recursion"
 date: 2023-02-03
 categories: [Data Structure]
