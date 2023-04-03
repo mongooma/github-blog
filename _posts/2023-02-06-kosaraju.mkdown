@@ -1,4 +1,5 @@
 ---
+layout: post
 title: Illustration of Kosaraju's strongly connected components algorithm
 date: 2023.2.6
 categories: Algorithms

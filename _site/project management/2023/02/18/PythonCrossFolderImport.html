@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Python: Cross-folder import &middot; Elapsed
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- JS -->
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+  <script src="https://code.jquery.com/jquery-3.3.0.min.js" integrity="sha256-RTQy8VOmNlT6b2PIRur37p6JEBZUE7o8wPgMvu18MC4=" crossorigin="anonymous"></script>
+  <script src="/public/js/main.js"></script>
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+
+</head>
+
+
+  <body>
+
+    
+
+
+<div class="sidebar">
+  <div class="sidebar-post-lead">
+      <nav class="sidebar-nav-post-lead">
+        <ul>
+        </ul>
+      </nav> 
+  </div> 
+
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          Elapsed
+        </a>
+      </h1>
+      <p class="lead">Mostly frameworks.</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Recent</a>
+
+      
+
+      
+      
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About Me</a>
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/categories/">Categories</a>
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/graphs/">On Graphs</a>
+          
+        
+      
+        
+          
+        
+      
+
+      <!-- <a class="sidebar-nav-item" href="/archive/v1.0.zip">Download</a> -->
+      <!-- <a class="sidebar-nav-item" href="">GitHub project</a> -->
+      <span class="sidebar-nav-item">Currently v1.0</span>
+    </nav>
+
+    <p>&copy; 2023. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <!-- <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script src="/public/js/main.js"></script> -->
+
+<div class="post">
+  <h1 class="post-title">Python: Cross-folder import</h1>
+  <span class="post-date">18 Feb 2023</span>  
+  <section>
+    <p><strong>(For Python 3.7)</strong></p>
+
+<p>Suppose you have a simple project which has the following folder structure:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NewProject/
+    tools/
+        core.py
+    
+    workflows/
+        preprocessing/
+            cleaning.py
+      
+        analysis/
+            plots.py
+            stats.py
+      
+            algorithms/
+                algos.py
+      
+        demo/
+            experiment.py
+   
+    
+    tests/
+        test1.py
+        test2.py
+  
+  main_script.py
+   
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">main_script.py</code> contains simple usage cases/test cases. 
+The <code class="language-plaintext highlighter-rouge">workflows/*/*</code> has all the actual procedures.
+The <code class="language-plaintext highlighter-rouge">tests</code> has tests designed for different parts of this project.</p>
+
+<p>They might all need to import from <code class="language-plaintext highlighter-rouge">tools/core.py</code>. 
+And for the scripts placed in <code class="language-plaintext highlighter-rouge">analysis/</code>, they need to also import from <code class="language-plaintext highlighter-rouge">analysis/algorithms/algos.py</code>.
+For <code class="language-plaintext highlighter-rouge">algorithms/algos.py</code>, it needs to import from <code class="language-plaintext highlighter-rouge">tools/core.py</code>.</p>
+
+<p>In order to let those cross-folder imports all work successfully, the “easiest” way is to create a package from this project. By creating a package, you could directly use the package root for referencing its modules.</p>
+
+<h2 id="a-wrong-way-to-create-the-project-package">A wrong way to create the project package</h2>
+
+<p>Place a <code class="language-plaintext highlighter-rouge">setup.py</code> under the root:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Project_root/
+  setup.py
+</code></pre></div></div>
+
+<p>The minimal <code class="language-plaintext highlighter-rouge">setup.py</code> for this purpose is simply</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">setuptools</span> <span class="kn">import</span> <span class="n">setup</span>
+
+<span class="n">setup</span><span class="p">(</span>
+  <span class="n">name</span><span class="o">=</span><span class="s">"some_project"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+<p>Even the <code class="language-plaintext highlighter-rouge">name</code> field is not necessary either. Python will automatically name it <code class="language-plaintext highlighter-rouge">UNKNOWN</code> if it’s missing.</p>
+
+<p>And then place an empty <code class="language-plaintext highlighter-rouge">__init__.py</code> under <code class="language-plaintext highlighter-rouge">tools/</code> and <code class="language-plaintext highlighter-rouge">algorithms/</code>. (In Python 3.7 it is still suggested to do this  even though it is not necessary for now.)</p>
+
+<p>Now build the package: from the Python environment, run <code class="language-plaintext highlighter-rouge">python setup.py develop</code> for development mode.</p>
+
+<p>After running <code class="language-plaintext highlighter-rouge">python setup.py develop</code>, the project folder containing <code class="language-plaintext highlighter-rouge">__init__.py</code> will be recognized as packages. And for Python 3.7, all the first-level subfolders are also visible everywhere in your python environment.</p>
+
+<p>So you could write in <code class="language-plaintext highlighter-rouge">test1.py</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import tools
+from tools import core
+from core import ...
+...
+</code></pre></div></div>
+
+<h2 id="forget-above-better-follow-some-conventions">Forget above: Better follow some conventions</h2>
+
+<p>The above shows how to resolve cross-folder import for any arbitrary folder structures. It’s simple and carefree, but it’s not the best practice.</p>
+
+<h3 id="name-clash-issue">Name clash issue</h3>
+
+<p>In the above process, you have created some packages that are only meaningful for the current project. 
+You will forget about all these when you move on from this project and create another one of a similar purpose, 
+which also contains <code class="language-plaintext highlighter-rouge">tools/</code>. You create the package for that project again and it will mess up your previous imports.</p>
+
+<p><strong>It’s worth mentioning now: You are not creating
+a package for this project, you simply creates the package for <code class="language-plaintext highlighter-rouge">tools/</code> (and other first-level sub-folders namespaced-ly. 
+It might throw error in some occassions if you also want to use them as packages. See <a href="https://stackoverflow.com/a/48804718">this</a>). And <code class="language-plaintext highlighter-rouge">import NewProject</code> will not have any effect anywhere.</strong></p>
+
+<p>It would help if you first realized that the packaging means integrating it into your Python environment. 
+You should avoid any name clash with the built-in/installed packages, and also be aware of any name clashes with your own in the future.</p>
+
+<h3 id="resolve-name-clash-name-the-package-by-project">Resolve name clash: Name the package by project</h3>
+
+<p>The standard way to organize the package is to wrap it in a parent folder:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NewProject/  # good convention to use the same name as the package name
+  bin/  # the scripts as the entry points
+  
+  NewProject/ # this is the package for this project.
+    ...
+  
+</code></pre></div></div>
+<p>The running <code class="language-plaintext highlighter-rouge">python setup.py develop</code> will create the package named <code class="language-plaintext highlighter-rouge">NewProject</code>. All the other sub-folders under <code class="language-plaintext highlighter-rouge">NewProject</code> could only be accessed from calling <code class="language-plaintext highlighter-rouge">NewProject</code>.</p>
+
+<p>For a reference to real-world packages, check out <a href="https://github.com/numpy/numpy">Numpy</a>.</p>
+
+<h3 id="separate-package-re-usable-and-calling-scripts">Separate package (re-usable) and calling scripts</h3>
+
+<p>Before creating the package, the above project could be re-organized as</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NewProject/
+
+    NewProject/  # the package content
+        __init__.py
+        tools/
+            __init__.py
+            core.py
+
+        algorithms/
+            __init__.py
+            algos.py
+
+    workflows/
+        preprocessing/
+            cleaning.py
+      
+        analysis/
+            plots.py
+            stats.py
+      
+        demo/
+            experiment.py
+   
+    tests/
+        test1.py
+        test2.py
+  
+    main_script.py
+  
+    #
+    setup.py
+
+</code></pre></div></div>
+<p>And now you want to write the <code class="language-plaintext highlighter-rouge">setup.py</code> as</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kn">from</span> <span class="nn">setuptools</span> <span class="kn">import</span> <span class="n">setup</span>
+
+<span class="n">setup</span><span class="p">(</span>
+   <span class="n">name</span><span class="o">=</span><span class="s">'NewProject'</span><span class="p">,</span>
+   <span class="n">packages</span><span class="o">=</span><span class="p">[</span><span class="s">"NewProject"</span><span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>Then from within <code class="language-plaintext highlighter-rouge">NewProject/NewProject</code>, the <code class="language-plaintext highlighter-rouge">algorithms/*</code> could import from <code class="language-plaintext highlighter-rouge">tools/*</code> as</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>from NewProject import tools
+</code></pre></div></div>
+<p>or</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>from NewProject.tools.core import ...
+</code></pre></div></div>
+
+<p>or other ways indicated by the <a href="https://docs.python.org/3/tutorial/modules.html#packages">doc</a>.</p>
+
+
+  </section>
+
+</div>
+
+<div class="related">
+  <h2>Most Recent Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/algorithms/2023/02/15/backtracking.html">
+            Writing Tree traversal for Backtracking
+            <small>15 Feb 2023</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/maths/2023/02/09/geometric_sequence.html">
+            Geometric Sequence Sum
+            <small>09 Feb 2023</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/algorithms/2023/02/06/kosaraju.html">
+            Illustration of Kosaraju's strongly connected components algorithm
+            <small>06 Feb 2023</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+    </div>
+
+  </body>
+</html>

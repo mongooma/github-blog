@@ -1,4 +1,5 @@
 ---
+layout: post
 title: Proof of Leetcode 11 "Container with most water"
 date: 2023.2.6
 categories: Algorithms

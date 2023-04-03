@@ -1,18 +1,21 @@
 ---
+layout: post
 title: "All-in-one MySQL techniques (beginner-intermediate)"
 date: 2023-02-03
 categories: Database
 ---
 
-Below is the copy of the gist project of my study notes for MySQL. The actual total study time is approximately ~20hrs. This guide is a quick reference of the common syntax, or a more simpler way to understand MySQL for those who are already familiar with other programming languages. 
+Below is the copy of the gist project of my study notes for MySQL. The actual total study time is approximately ~20hrs, including my past experience with SQL and a weekend's practice on Hackerrank. This guide is a quick reference of the common syntax, or a more simpler way to understand MySQL for those who are already familiar with other programming languages. 
 
-The most important thing is to realize that, MySQL is basically a language that manipulates tables. The tables are the data structure for MySQL as the lists, tuples and dictionaries for Python. 
+During practicing SQL, I find that the most important thing is to realize that, MySQL is basically a language that manipulates tables. The tables are the data structure for MySQL as the lists, tuples and dictionaries for Python. 
 
+* ```Edit log, 3.28.2023```: *I have used amateur terms and case examples to explain about SQL. Now after visiting a course on database system (I was a computational maths undergrad) I have known better organizations for these concepts. But I still like to keep the trace of the understanding simply from practicing coding examples so I won't perform a complete reconstruction of this study note. However, I will keep updating this post by adding references to technical resources.*
 
 ---
 
-Hackerrank features:
-(Mysql vs Mysql server on hackerrank)
+(*For practicing on Hackerrank*) Hackerrank features:
+
+Mysql vs Mysql server on Hackerrank
 * ```with``` clause sometimes cause error in mysql environment
 
 * ```--``` comment cannot be written in the same line with the code
@@ -62,7 +65,7 @@ group by occupation
 order by COUNT(NAME), occupation;
 ```
 
-Notice in the above example, the simple ```concat``` is used to format a string, ```substr(s, pos, num)``` acts as ``string[pos+1:pos+1+num]```` to get part of the string. See here for more ways to manipulate the string output https://learnsql.com/blog/5-functions-manipulating-sql-strings/
+Notice in the above example, the simple ```concat``` is used to format a string, ```substr(s, pos, num)``` acts as ``string[pos+1:pos+1+num]```` to get part of the string. See [here](https://learnsql.com/blog/5-functions-manipulating-sql-strings/) for more ways to manipulate the string output.
 
 
 ## Select
@@ -126,11 +129,11 @@ So the efficiency priority goes:
 Notice that 1 & 2 will change the content of the table in the scope, and 2 as slicing should go after 1 joining.
 As for 3 and 4, even they might use different columns thus have no sequential dependency, but if first bagging, the next row ordering could have fewer rows to deal with, thus more efficient.
 
-For a more detailed explanation see https://sqlbolt.com/lesson/select_queries_order_of_execution
+For a more detailed explanation see [here](https://sqlbolt.com/lesson/select_queries_order_of_execution).
 
-### select from multiple tables
+### Select from multiple tables
 
-In this example, https://www.hackerrank.com/challenges/the-company/problem?isFullScreen=false, the problem asks to gather the information from 5 tables under one ```company_code``` id. This should be a typical setting. And one solution from the discussion looks like:
+In [this example](https://www.hackerrank.com/challenges/the-company/problem?isFullScreen=false), the problem asks to gather the information from 5 tables under one ```company_code``` id. This should be a typical setting. And one solution from the discussion looks like:
 
 ``` sql
 SELECT 
@@ -145,7 +148,7 @@ GROUP BY c.company_code
 ORDER BY c.company_code ASC
 ```
 
-Notice the structure has a use of "implicit join" https://www.geeksforgeeks.org/implicit-join-vs-explicit-join-in-sql/
+Notice the structure has a use of ["implicit join"](https://www.geeksforgeeks.org/implicit-join-vs-explicit-join-in-sql/)
 which has the structure as
 
 ``` sql
@@ -177,8 +180,9 @@ ORDER BY C.company_code;
 The structure of the giant joined table is 
 
 ```
-company_code founder | company_code founder lead_manager_code | company_code founder lead_manager_code senior_manager_code | ...
----------------------------------------------------------------------------------------------------------------------------------
+company_code founder | 
+company_code founder lead_manager_code | 
+company_code founder lead_manager_code senior_manager_code | ...
 ```
 Notice the columns with the same names have been preserved within the giant table, and they could still be referred by ```table.col```. 
 
@@ -186,7 +190,7 @@ This shows that ```join``` only links (as allowing the data communication betwee
 
 
 
-## Case..when...
+## Case...when...
 
 To output for different occasions, use ```case {when...then}*n else end``` as:
 
@@ -290,6 +294,19 @@ where (col = (case when condition then c1) or (case when condition then c2) or (
 ```
 **(However there must be a better way to implement this!)**
 
+### The having clause
+
+```having``` could be used to simplify the procedure of selecting only the part of the sub-bags, e.g. "the item count larger than k". The grammar is like
+
+```sql
+
+select count(*)
+from table
+group by item
+having count(*) > k
+```
+
+* ```Note```: Check the syntax ```group by ... having ...```.
 
 
 
@@ -332,9 +349,11 @@ select * from t2 where ...;
 ```
 Therefore notice the ```with``` is within the select sentence as a clause. 
 
-### info table and reference table 
+### Info table and reference table 
 
-In this problem https://www.hackerrank.com/challenges/full-score/problem?isFullScreen=true, it has two part of the information: the coder's info, and the challenges' info. The result returns the info of the coders based on their performance on the challenges. This could be interpreted as a "refering" relationship.
+* ```Note```: Also check for "Primary key and foreign key".
+
+In [this problem](https://www.hackerrank.com/challenges/full-score/problem?isFullScreen=true), it has two part of the information: the coder's info, and the challenges' info. The result returns the info of the coders based on their performance on the challenges. This could be interpreted as a "referring" relationship.
 
 In the original submission the classic way is to create join tables. But SQL has a structure called "correlated subquery" which deals exactly this. The structure looks like:
 
@@ -363,16 +382,6 @@ Notice the ```group by``` is also on the correlation column to make sure the com
 The effect of the above snippet is to compare the employee's salary to the avg. in his department.
 It's similar to comparing the coder's performance to the difficulty of the challenges he solved. (See the different submission for the implementation.)
 
-And also for this problem https://www.hackerrank.com/challenges/harry-potter-and-wands/problem?isFullScreen=true
+And also for [this problem](https://www.hackerrank.com/challenges/harry-potter-and-wands/problem?isFullScreen=true).
 
-### the having clause
 
-```having``` could be used to simplfy the procedure of selecting only the part of the sub-bags, e.g. "the item count larger than k". The grammar is like
-
-```sql
-
-select count(*)
-from table
-group by item
-having count(*) > k
-```
