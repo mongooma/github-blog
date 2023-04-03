@@ -48,7 +48,7 @@ body {
 }
 
 html {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: Ubuntu, /*"Helvetica Neue", Helvetica, Arial, sans-serif;*/
   font-size: 16px;
   line-height: 1.5;
 }
@@ -86,9 +86,11 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.25;
   color: #313131;
   text-rendering: optimizeLegibility;
+  border-bottom: 3px solid #202020; /* manually fix the color upon theme color change */
 }
 h1 {
   font-size: 2rem;
+  border-bottom: none;
 }
 h2 {
   margin-top: 1rem;
@@ -118,6 +120,11 @@ strong {
 ul, ol, dl {
   margin-top: 0;
   margin-bottom: 1rem;
+}
+
+li {
+  font-size: medium;
+  text-align: left;
 }
 
 dt {
@@ -174,7 +181,7 @@ pre {
 }
 pre code {
   padding: 0;
-  font-size: 100%;
+  font-size: 85%;
   color: inherit;
   background-color: transparent;
 }
