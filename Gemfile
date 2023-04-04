@@ -2,8 +2,6 @@
 
 source "https://rubygems.org"
 
-gemspec
-
 gem "jekyll-theme-chirpy", "~> 5.4", ">= 5.4.0"
 
 group :test do
