@@ -1,0 +1,86 @@
+---
+layout: post
+title: "The Debug Note of JS from the very first day"
+categories: [Javascript]
+emojis: https://gist.github.com/rxaviers/7360908
+---
+
+
+I started out coding with Python as a very ignorant person. I have no frame of reference, no tranfered experience from other languages, and no sense or taste at all. And yes, I think I learnt Python before I coded my first line in Matlab or even Mathematica. I was learning Python at the same time with "learning" to code in C/C++ (or rather, copying templates and try to "debug" them? I felt like such a headless busy bee back then. 😒), and I quickly forsaked them as I would go to Python first for all my needs (back then, and mostly--if not always--today.).
+
+Python is such an easy language. As for complexity, people always say it's comparable to JavaScript, the latter, on the other hand, I have always been hearing news about it -- it has strange syntax, weird issues bubbling from the bottom of a chain, very flimsy standards which almost grow exponentially. And above all, it's a language for "front-end", huh, "front-end".
+
+
+I want to keep a debugging notebook from my very first day of learning/using JS. So here it goes --
+
+--
+
+
+# Error messages
+
+4.9.2023:
+
+environment: chrome-extension, manifest V3
+
+```
+chrome.extension.getbackgroundpage is not a function
+```
+I used it in ```content.js```.
+
+```
+Extension manifest must request permission to access this host
+```
+The extension tries to access some tab. In manifest V3, we should add the host under ```"host_permissions"``` in ```manifest.json```.
+
+```
+chrome.tabs.query tab.id undefined
+```
+Since I could not access some tab, I could not access the ```id``` field of that return object.
+
+```
+chrome.scripting.executescript cannot read properties of undefined
+```
+I didn't add ```"scripting"``` to ```"permissions"```.
+
+
+# Frequent searches
+
+```
+chrome.runtime.onMessage.addListener
+```
+(I found multiple history searches on this term. The reason I need to go back to searching it multiple times, is that I was refering to chrome's doc for this API. So here is a lesson: One should refer to mdn's, always.)
+
+```
+does chrome extension need a jquery
+```
+(This is a beginner's question. I was asking this because I mistook JQuery for JS, since I always include the jquery line in the header if I need to use a JS plugin.)
+
+```
+how to use npm package in developing chrome extensionm
+```
+(In manifest V3, no external packages are allowed. The developer should include the minimal package ```*.min.js``` in the folder.)
+
+```
+Is it possible to develop Google Chrome extensions using node.js?
+```
+(The answer is, no (not in the normal way).)
+
+```
+chrome extension background.js
+```
+(Multiple searches for this one. ```background.js``` modifies the ```background.html``` and could serve as a coordinator for multiple contexts. Call ```chrome.runtime``` to get a background page object.)
+
+```
+chrome extension manifest v3 content script
+```
+(Content scripts could access the DOM. )
+
+
+
+
+
+
+
+
+
+
