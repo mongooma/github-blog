@@ -1,0 +1,6 @@
+---
+layout: post
+title: "Use dependency graph to solve relational database relation decomposing problems"
+categories: [database]
+---
+
