@@ -18,9 +18,13 @@ I want to keep a debugging notebook from my very first day of learning/using JS.
 
 # Error messages
 
-4.9.2023:
-
 environment: chrome-extension, manifest V3
+
+
+```
+javascript - Uncaught ReferenceError: importScripts is not defined
+```
+I tried to use it in a non-worker (Web Worker object, ```var worker = new Worker("some.js")```) context.
 
 ```
 chrome.extension.getbackgroundpage is not a function
@@ -44,36 +48,71 @@ I didn't add ```"scripting"``` to ```"permissions"```.
 
 
 # Frequent searches
+```
+visual studio code chrome runtime autocomplete
+```
+Install the dependency ```chrome-types``` in the project. 
+
+```
+what does npm install do
+```
+By running it within the project root, it set up the dependency in the sub-folder ```./node_modules``` and updated ```package.json```. It does not add the global dependency for all the javascript running env, etc.
+
+```
+message passing debug javascript
+```
+Still haven't found a prototyped coding structure to write the message-passing. Keep looking on that.
+
+
+```
+javascript concatenate strings
+```
+"+" could be used for strings and numbers.
+
+```
+javascript chrome console load external script
+```
+No. Chrome does not allow accessing local files from the console.
+
+```
+javascript console bash
+```
+There is no such tool as in Python. Use the browser.
+
+```
+Var, Let, and Const
+```
+Belong to the 101 series. ```var``` init a regular variable -- updatable and re-declarable, ```let``` lost the re-declarability but updatable, ```const``` is neither re-declarable or updatable.
 
 ```
 chrome.runtime.onMessage.addListener
 ```
-(I found multiple history searches on this term. The reason I need to go back to searching it multiple times, is that I was refering to chrome's doc for this API. So here is a lesson: One should refer to mdn's, always.)
+I found multiple history searches on this term. The reason I need to go back to searching it multiple times, is that I was refering to chrome's doc for this API. So here is a lesson: One should refer to mdn's, always.
 
 ```
 does chrome extension need a jquery
 ```
-(This is a beginner's question. I was asking this because I mistook JQuery for JS, since I always include the jquery line in the header if I need to use a JS plugin.)
+I was asking this because I mistook JQuery for JS, since I always include the jquery line in the header if I need to use a JS plugin.
 
 ```
 how to use npm package in developing chrome extensionm
 ```
-(In manifest V3, no external packages are allowed. The developer should include the minimal package ```*.min.js``` in the folder.)
+In manifest V3, no external packages are allowed. The developer should include the minimal package ```*.min.js``` in the folder.
 
 ```
 Is it possible to develop Google Chrome extensions using node.js?
 ```
-(The answer is, no (not in the normal way).)
+The answer is, no (not in the normal way).
 
 ```
 chrome extension background.js
 ```
-(Multiple searches for this one. ```background.js``` modifies the ```background.html``` and could serve as a coordinator for multiple contexts. Call ```chrome.runtime``` to get a background page object.)
+```background.js``` modifies the ```background.html``` and could serve as a coordinator for multiple contexts. Call ```chrome.runtime``` to get a background page object.
 
 ```
 chrome extension manifest v3 content script
 ```
-(Content scripts could access the DOM. )
+Content scripts could access the DOM. 
 
 
 
