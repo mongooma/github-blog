@@ -46,6 +46,17 @@ chrome.scripting.executescript cannot read properties of undefined
 ```
 I didn't add ```"scripting"``` to ```"permissions"```.
 
+```
+javascript - Node.js: SyntaxError: Cannot use import statement outside a module
+```
+Add ```{"type":"module"}``` to ```package.json```. If to use in a browser, add ```type=module``` in the ```<script>```.
+
+```
+javascript - "Cross origin requests are only supported for HTTP."
+```
+Directly accessed the file from local folder system without setting up the server port for it.
+
+
 
 # Frequent searches
 ```
@@ -59,10 +70,14 @@ what does npm install do
 By running it within the project root, it set up the dependency in the sub-folder ```./node_modules``` and updated ```package.json```. It does not add the global dependency for all the javascript running env, etc.
 
 ```
+npm vs npx
+```
+They are different applications. ```npx``` will directly execute a package.
+
+```
 message passing debug javascript
 ```
 Still haven't found a prototyped coding structure to write the message-passing. Keep looking on that.
-
 
 ```
 javascript concatenate strings
@@ -74,10 +89,35 @@ javascript chrome console load external script
 ```
 No. Chrome does not allow accessing local files from the console.
 
+Include the file in the script line in a html file. Set up the server in the root. The script could be accessed in the console this way.
+
+```
+how to use npm installed packages in developing chrome extensionm
+```
+In manifest V3, no external packages are allowed. The developer should include the minimal package ```*.min.js``` in the folder.
+
+(As of post-2022) Another way is to use Extension-Cli (see [this](https://stackoverflow.com/questions/43684452/is-it-possible-to-require-npm-modules-in-a-chrome-extension)) to automate the "bundle" process (create one .js file for the module needed). Then the ```require/import``` could be normally used.
+
+```
+Chrome Developer Tools caches old version of JavaScript files
+```
+The devtool source view does not reflect recent changes to the file. Clear the cache. Or get a new incognito window for it.
+
+```
+javascript es6
+```
+ES6 is a new standard for javascript.
+
+```
+javascript handle view
+```
+I searched it because I only see in the function def. the return type is ```view```. Turns out there is no way to check its structure without further information. Another case indicating javascript should be coded in a well-equipped IDE and tested in a well-supported console. The document is usually very lacking.
+
 ```
 javascript console bash
 ```
 There is no such tool as in Python. Use the browser.
+However, install ```Node.js``` and enter ```node``` in the terminal, it will give you a "javascript console" in the similar way as the Python console.
 
 ```
 Var, Let, and Const
@@ -93,11 +133,6 @@ I found multiple history searches on this term. The reason I need to go back to 
 does chrome extension need a jquery
 ```
 I was asking this because I mistook JQuery for JS, since I always include the jquery line in the header if I need to use a JS plugin.
-
-```
-how to use npm package in developing chrome extensionm
-```
-In manifest V3, no external packages are allowed. The developer should include the minimal package ```*.min.js``` in the folder.
 
 ```
 Is it possible to develop Google Chrome extensions using node.js?
