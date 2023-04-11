@@ -10,8 +10,9 @@ I started out coding with Python as a very ignorant person. I have no frame of r
 
 Python is such an easy language. As for complexity, people always say it's comparable to JavaScript, the latter, on the other hand, I have always been hearing news about it -- it has strange syntax, weird issues bubbling from the bottom of a chain, very flimsy standards which almost grow exponentially. And above all, it's a language for "front-end", huh, "front-end".
 
+I guess for Javascript, taking notes is needed more seriously.
 
-I want to keep a debugging notebook from my very first day of learning/using JS. So here it goes --
+So I will keep a debugging notebook from my very first day of learning/using JS. So here it goes --
 
 --
 
