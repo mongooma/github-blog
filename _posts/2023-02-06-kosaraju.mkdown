@@ -31,6 +31,5 @@ The result is only a collection of the components. The directional edges (relati
 
 ## Reconstruct the directional edges between SCC
 
-To reconstruct these directional edges, perform DFS from the source component (or multiple times if there are multiple source/target components). At each step on $$(u, v)$$, knowing that the current node $$u$$ in component $$C_i$$, record the linkage between the components by checking on $$v$$ for every other component $$C_j$$. 
-Therefore, if we have $$k$$ components, this will take $$O(k * |E|)$$, and in the worst case $$O(|V| * |E|)$$.
+To reconstruct these directional edges, for each edge $$(u, v)$$, knowing that the node $$u$$ in component $$C_i$$, if the node $$v$$ in component $$C_j$$ with $$i \neq j$$, add a link in the meta-graph for $(i, j)$. This will take $$O(|E|)$$.
 
